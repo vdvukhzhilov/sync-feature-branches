@@ -1,11 +1,15 @@
-name: 'Name of the action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Sync Feature Branches'
+description: 'Syncs feature branches with the latest changes from the main branch'
+author: 'Vadim Dvukhzhilov'
 inputs:
-  milliseconds: # change this
+  source_branch:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Name of the source branch'
+    default: 'main'
+  target_branch_regex:
+    required: true
+    description: 'A regexp for target branches'
+    default: 'feature/.*'
 runs:
-  using: 'node16'
+  using: 'node18'
   main: 'dist/index.js'

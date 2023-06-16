@@ -21,28 +21,21 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - uses: magnetikonline/action-node-modules-cache@v1
+        id: node-with-cache
         with:
-          node-version: 16
-      - run: corepack enable
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - name: Restore yarn cache
-        uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: yarn-cache-folder-${{ hashFiles('**/yarn.lock', '.yarnrc.yml') }}
-          restore-keys: |
-            yarn-cache-folder-
+          node-version: 18
+          node-modules-path: node_modules
+          package-lock-path: package-lock.json
       - name: Fetch and link dependencies
-        run: yarn
+        run: npm install --no-audit --loglevel="error"
+        if: steps.node-with-cache.outputs.cache-hit != 'true'
+        shell: bash
       - name: Lint, test, build
         run: |
-          yarn lint
-          yarn test
-          yarn build
+          npm run lint
+          npm run test
+          npm run build
   test-run:
     name: Make a test run
     runs-on: ubuntu-latest
