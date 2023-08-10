@@ -110,6 +110,7 @@ async function run() {
         })
 
         info('PR branch updated\n')
+
         info(`You can view it here: ${currentPull.url}`)
 
         setOutput('PULL_REQUEST_URL', currentPull.url.toString())
