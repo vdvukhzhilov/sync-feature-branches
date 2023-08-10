@@ -1,4 +1,4 @@
-import Core from '@actions/core'
+import { setFailed, info, setOutput, debug } from '@actions/core'
 import { context } from '@actions/github'
 import { getActionInputs } from './inputs/get'
 import { getClient } from './octokit/client'
@@ -30,7 +30,7 @@ async function createGithubBranch(
         ...context.repo
       })
     } else {
-      Core.debug('Failed creating new branch')
+      debug('Failed creating new branch')
       throw httpError
     }
   }
@@ -61,7 +61,7 @@ async function run() {
 
     for (const branchData of targetBranches) {
       const branch = branchData.ref.replace('refs/heads/', '')
-      Core.info(`Making a pull request for ${branch} from ${sourceBranch}.`)
+      info(`Making a pull request for ${branch} from ${sourceBranch}.`)
       // part of test
       const { data: currentPulls } = await octokit.rest.pulls.list({
         owner: repository.owner.login,
@@ -72,9 +72,7 @@ async function run() {
       const newBranch = `${sourceBranch}-to-${branch}`
 
       const currentPull = currentPulls.find(pull => {
-        Core.info(
-          `Pull ref: "${pull.head.ref}". Pull base ref: "${pull.base.ref}"`
-        )
+        info(`Pull ref: "${pull.head.ref}". Pull base ref: "${pull.base.ref}"`)
         return pull.head.ref === newBranch && pull.base.ref === branch
       })
 
@@ -91,18 +89,18 @@ async function run() {
           draft: false
         })
 
-        Core.info(
+        info(
           `Pull request (${pullRequest.number}) successful! You can view it here: ${pullRequest.url}.`
         )
 
-        Core.setOutput('PULL_REQUEST_URL', pullRequest.url.toString())
-        Core.setOutput('PULL_REQUEST_NUMBER', pullRequest.number.toString())
+        setOutput('PULL_REQUEST_URL', pullRequest.url.toString())
+        setOutput('PULL_REQUEST_NUMBER', pullRequest.number.toString())
       } else {
         // If PR exists update PR branch with sourceBranch
-        Core.info(
+        info(
           `There is already a pull request (${currentPull.number}) to ${branch} from ${newBranch}.\n`
         )
-        Core.info('Updating PR branch...')
+        info('Updating PR branch...')
 
         await octokit.rest.repos.merge({
           owner: repository.owner.login,
@@ -111,15 +109,16 @@ async function run() {
           head: context.sha
         })
 
-        Core.info('PR branch updated\n')
-        Core.info(`You can view it here: ${currentPull.url}`)
+        info('PR branch updated\n')
+        info(`You can view it here: ${currentPull.url}`)
 
-        Core.setOutput('PULL_REQUEST_URL', currentPull.url.toString())
-        Core.setOutput('PULL_REQUEST_NUMBER', currentPull.number.toString())
+        setOutput('PULL_REQUEST_URL', currentPull.url.toString())
+        setOutput('PULL_REQUEST_NUMBER', currentPull.number.toString())
       }
     }
   } catch (error) {
-    Core.setFailed((error as Error).message)
+    console.dir(error)
+    setFailed((error as Error).message)
   }
 }
 
