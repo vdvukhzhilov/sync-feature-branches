@@ -29,7 +29,7 @@
     "@actions/github": "^5.1.1",
     "@octokit/action": "^6.0.5",
     "@octokit/plugin-rest-endpoint-methods": "^7.2.3",
-    "https-proxy-agent": "^7.0.0",
+    "https-proxy-agent": "^7.0.1",
     "proxy-from-env": "^1.1.0"
   },
   "devDependencies": {
