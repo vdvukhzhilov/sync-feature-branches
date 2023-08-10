@@ -1,0 +1,43 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: magnetikonline/action-node-modules-cache@v1
+        id: node-with-cache
+        with:
+          node-version: 18
+          node-modules-path: node_modules
+          package-lock-path: package-lock.json
+      - name: Fetch and link dependencies
+        run: npm install --no-audit --loglevel="error"
+        if: steps.node-with-cache.outputs.cache-hit != 'true'
+        shell: bash
+      - name: build
+        run: |
+          npm run build
+  test-run:
+    name: Make a test run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run
+        uses: ./
+        with:
+          target_branch_ref: 'feature/'
+          source_branch: 'main'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
