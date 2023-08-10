@@ -14,5 +14,5 @@ inputs:
     description: 'A target branches ref'
     default: 'feature/'
 runs:
-  using: 'node18'
+  using: 'node16'
   main: 'dist/index.js'
