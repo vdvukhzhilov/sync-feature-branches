@@ -38,7 +38,7 @@
     "@types/jest": "29.5.2",
     "@types/node": "20.3.1",
     "@types/proxy-from-env": "^1.0.1",
-    "cpy-cli": "4.2.0",
+    "cpy-cli": "5.0.0",
     "esbuild": "0.18.3",
     "eslint": "8.42.0",
     "eslint-config-prettier": "8.8.0",
