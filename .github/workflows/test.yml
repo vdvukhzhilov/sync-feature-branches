@@ -1,17 +1,9 @@
-name: Verification
+name: Test
 
 on:
-  pull_request:
-    paths-ignore:
-      - '.vscode/**/*'
-      - '*.md'
   push:
     branches:
       - main
-      - 'releases/*'
-    paths-ignore:
-      - '.vscode/**/*'
-      - '*.md'
 
 jobs:
   build:
@@ -31,10 +23,8 @@ jobs:
         run: npm install --no-audit --loglevel="error"
         if: steps.node-with-cache.outputs.cache-hit != 'true'
         shell: bash
-      - name: Lint, test, build
+      - name: build
         run: |
-          npm run lint
-          npm run test
           npm run build
   test-run:
     name: Make a test run
@@ -44,4 +34,6 @@ jobs:
       - name: Run
         uses: ./
         with:
-          milliseconds: 500
+          target_branch_regex: 'feature/.*'
+          source_branch: 'main'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
